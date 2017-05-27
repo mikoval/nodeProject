@@ -1,0 +1,158 @@
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<style>
+body{
+    margin:20px;
+}
+#grey-cover
+{
+    background-color: gray;
+    filter:alpha(opacity=50); /* IE */
+    opacity: 0.5; /* Safari, Opera */
+    -moz-opacity:0.50; /* FireFox */
+    z-index: 20;
+    height: 100%;
+    width: 100%;
+    background-repeat:no-repeat;
+    background-position:center;
+    position:absolute;
+    top: 0px;
+    left: 0px;
+}
+#select-menu{
+    width:400px; 
+    height:200px;
+    background-color:white; 
+    position:absolute; 
+    top:40%;
+    left:50%;
+    margin-left:-200px;
+    margin-top:-100px;
+    border-radius:10px; 
+    display:block; 
+    opacity:1.0; 
+    text-align:center;
+    z-index:30;
+}
+#tools-container{
+        padding:10px; 
+        top:0px; 
+        left: 700px;
+        display:inline; 
+        position:absolute;
+    }
+</style>
+<body>
+<div id = "grey-cover" class = "menu-item"></div>
+ <div id = "select-menu" class = "menu-item">
+    <h3 style = "margin-bottom:0px">Waiting for an opponent to join. Share a link to this page to invite.</h3>
+    <img src = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style = "width:100px; height:100px" > 
+</div>
+
+<canvas id="Canvas" width= "600px" height = "600px">
+Your browser does not support the canvas element.
+</canvas>
+<br>
+<div id = "tools-container">
+    <h3 id = "turn" style = "display: none">Your turn</h3>
+</div>
+
+
+
+
+</div>
+<img border="0" id = "bombimg" alt="bomb" src="https://lh3.ggpht.com/YdRAkpeukPMqgxWjvYFoq3xftAP6ztWlNWBsci-S-XTM-0NFuqUpPZRafLM0oCbu63U=w300" style = " display:none">
+
+</body>
+
+<script>
+var canvas = document.getElementById("Canvas");
+var context = canvas.getContext("2d");
+var width = 3;
+var height = 3;
+var vSize = 600/height;
+var hSize = 600/width;
+var grid;
+var turn = false;
+
+
+
+socket = io()
+socket.on('tttUpdate', setGrid);
+socket.on('tttTurn', setTurn);
+socket.on('tttComplete', complete);
+function complete(data){
+    alert(data.status);
+}
+function setTurn(){
+    $("#turn").show();
+    turn = true;
+}
+function setGrid(data){
+    if(data.status != "ready"){$(".menu-item").show();}
+    else{
+        $("#turn").hide();
+        $(".menu-item").hide()
+        grid = data.grid;
+        display(grid);
+    }
+   
+}
+function display(grid){
+    linesV = width-1;
+    linesH = height-1
+    context.fillStyle = "#555555";
+    context.fillRect(0,0, 600, 600 )
+    context.fillStyle = "#000000";
+           
+    for(var i = 0; i < linesV; i++){
+        context.fillRect((i+1) * hSize - hSize * .05,0, hSize * .1, 600 )
+    }
+    for(var i = 0; i < linesH; i++){
+        context.fillRect(0,(i+1) * vSize - vSize * .05, 600, vSize * .1 )
+    }
+    
+    context.fillStyle = "#FF0000";       
+    context.font = hSize + "px Arial";
+    for(var x  = 0; x < grid.length; x++){
+        for(var y = 0; y < grid[0].length; y++){
+            
+            if(grid[x][y] == "X"){context.fillText(grid[x][y], x * hSize + hSize/6,(y+1)  * vSize - vSize/8) ;}
+            if(grid[x][y] == "O"){context.fillText(grid[x][y], x * hSize + hSize/10,(y+1)  * vSize - vSize/8) ;}
+        }
+    }
+}
+
+
+
+window.addEventListener('click', click, false);
+function click(e){
+    if(!turn){return;}
+    var pos = getMousePos(canvas, e);
+    var x = pos.x;
+    var y = pos.y;
+    if(x < 0 || x > 600){return;}
+    if(y < 0 || y > 600){return;}
+    x = Math.floor(x / hSize);
+    y = Math.floor(y / vSize);
+    if(grid[x][y] != "_"){return;}
+    //todo
+ 
+    socket.emit('tttMove', {x:x, y:y});
+    
+
+    
+    
+}
+function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+}
+
+    
+</script>
+</html>

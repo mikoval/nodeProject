@@ -6,8 +6,8 @@ function setup() {
   myCanvas.parent('myContainer');
   background(51);
   socket = io()
-  socket.on('mouse', newDrawing);
-  socket.on('text', newText);
+  socket.on('drawMouse', newDrawing);
+  socket.on('drawText', newText);
 }
 
 
@@ -41,7 +41,7 @@ function draw() {
             transparancy:transparancy
 
         }
-        socket.emit('mouse', data);
+        socket.emit('drawMouse', data);
     }
     
 }

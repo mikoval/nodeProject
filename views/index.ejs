@@ -6,14 +6,28 @@
     <body>
     <h3>Welcome to my game application</h3>
 
-    <a id = "new-drawing" href = "#" > Create new drawing</a>
+    <a id = "new-drawing" href = "#" > Create new drawing</a><br>
+    <a id = "new-minesweeper" href = "#" > Play Minesweeper</a><br>
+    Tic-Tac-Toe: <a id = "new-tic-tac-toe" href = "#" >Online</a>  <a  style = "margin-left: 10px" id = "new-tic-tac-toe-ai" href = "#" >AI</a>
     </body>
     <script>
 
     $("#new-drawing").on("click", function(){
         var room = getRoom(); 
-        location = /draw/ + room;
+        location = "/draw/" + room;
     })
+    $("#new-minesweeper").on("click", function(){
+        location = "/minesweeper" 
+    })
+    $("#new-tic-tac-toe").on("click", function(){
+        var room = getRoom(); 
+        location = "/tic-tac-toe/" + room;
+    })
+    $("#new-tic-tac-toe-ai").on("click", function(){
+        var room = getRoom(); 
+        location = "/tic-tac-toe-ai/" 
+    })
+
 
     function getRoom(){
         return Math.round(Math.random() * 1000000000);

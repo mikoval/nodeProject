@@ -162,7 +162,7 @@
             console.log($("#chat-body").val().length)
             if($("#chat-body").val().length >0)
                 text = "&#13;&#10;" + text
-            socket.emit('text', text);
+            socket.emit('drawText', text);
             $("#chat-body").html($("#chat-body").html() +  text );
 
 
