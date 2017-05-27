@@ -1,0 +1,21 @@
+{
+  "name": "pairdrawing",
+  "version": "1.0.0",
+  "description": "Sockets test",
+  "main": "server.js",
+  "scripts": {
+    "test": "sockets p5.js node",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "sockets",
+    "p5.js",
+    "node"
+  ],
+  "author": "Michael Koval",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.3",
+    "socket.io": "^2.0.1"
+  }
+}
