@@ -79,6 +79,7 @@ function newConnection(socket){
 
       var game = rooms[room];
       var turn = game.turn;
+      if(ttt.complete(game.grid)){return;}
       if("" + game[turn] == "" + socket.id){
         if(game.grid[x][y] == "_"){
           if(turn == "p1"){
