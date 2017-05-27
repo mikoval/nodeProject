@@ -56,6 +56,8 @@ Your browser does not support the canvas element.
 <br>
 <div id = "tools-container">
     <h3 id = "turn" style = "display: none">Your turn</h3>
+    <h3 id = "status" style = "display: none"></h3><br>
+    <button id = "restart" style = "display:none">Play Again</button>
 </div>
 
 
@@ -83,7 +85,10 @@ socket.on('tttUpdate', setGrid);
 socket.on('tttTurn', setTurn);
 socket.on('tttComplete', complete);
 function complete(data){
-    alert(data.status);
+    $("#turn").hide();
+    $("#status").text(data.status)
+    $("#status").show();
+    $("#restart").show();
 }
 function setTurn(){
     $("#turn").show();
@@ -92,6 +97,8 @@ function setTurn(){
 function setGrid(data){
     if(data.status != "ready"){$(".menu-item").show();}
     else{
+        $("#status").hide();
+        $("#restart").hide();
         $("#turn").hide();
         $(".menu-item").hide()
         grid = data.grid;
@@ -140,11 +147,11 @@ function click(e){
     //todo
  
     socket.emit('tttMove', {x:x, y:y});
-    
 
-    
-    
 }
+$("#restart").on("click", function(){
+    socket.emit('tttRestart');
+})
 function getMousePos(canvas, evt) {
     var rect = canvas.getBoundingClientRect();
     return {

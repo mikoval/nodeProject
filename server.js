@@ -1,5 +1,5 @@
 var express = require('express');
-
+var ttt = require('./tttUtility.js');
 var app = express();
 var port = process.env.PORT || 8080;
 
@@ -46,18 +46,32 @@ function newConnection(socket){
     socket.on('drawMouse', drawMouseMsg);
     socket.on('drawText', drawTextMsg);
     socket.on("tttMove", tttMove)
+    socket.on("tttRestart", tttRestart)
     //socket.on('tttMove', tttMove);
     if(type == "tic-tac-toe"){
       TTT(room)
     }
     
-
+    //drawing handlers
     function drawMouseMsg(data){
         socket.broadcast.to(room).emit('drawMouse', data);
     }
     function drawTextMsg(data){
         console.log("got message")
         socket.broadcast.to(room).emit('drawText', data);
+    }
+    // drawing complete
+    // ttt handlers
+    function tttRestart(data){
+      rooms[room].grid = createGrid(3,3);
+      var sturn;
+      var rand = Math.floor(Math.random()*2);
+      if(rand == 0){sturn = "p1"}
+      else{sturn = "p2"}
+      rooms[room].turn = sturn;
+      turn = rooms[room].turn
+      io.to(room).emit("tttUpdate", rooms[room]);
+      io.to(rooms[room][turn]).emit("tttTurn");
     }
     function tttMove(data){
       var x = data.x;
@@ -80,13 +94,14 @@ function newConnection(socket){
 
       var turn = rooms[room].turn;
       var grid = rooms[room].grid
-      var complete = tttComplete(grid);
+      io.to(room).emit("tttUpdate", rooms[room]);
+      var complete = ttt.complete(grid);
       if(complete){
-        var val = CheckState(grid);
+        var val = ttt.checkState(grid);
         if ( val > 0){io.to(room).emit("tttComplete", {status: "O wins"});}
         else if ( val < 0){io.to(room).emit("tttComplete", {status: "X wins"});}
         else{ {io.to(room).emit("tttComplete", {status: "Tie Game"});}}
-        io.to(room).emit("tttUpdate", rooms[room]);
+        
       }
       else{
         io.to(room).emit("tttUpdate", rooms[room]);
@@ -96,10 +111,68 @@ function newConnection(socket){
 
 
     }
-
+    // TTT Complete
 
  
 }
+
+
+//tic-tac-toe utility
+function TTT(room) {
+
+    var players = Object.keys(io.sockets.adapter.rooms[room].sockets);  
+    var count = players.length;
+    if(count == 2 && rooms[room] == undefined){
+      console.log("creating game")
+      var sturn;
+      var rand = Math.floor(Math.random()*2);
+      if(rand == 0){sturn = "p1"}
+      else{sturn = "p2"}
+      rooms[room] = {turn: sturn , grid: createGrid(3,3), status: "ready", p1: players[0], p2: players[1]}
+      var turn = rooms[room].turn;
+      
+      io.to(room).emit("tttUpdate", rooms[room]);
+      io.to(rooms[room][turn]).emit("tttTurn");
+    } 
+    else if (count == 2){
+        var p1  = false;
+        var p2 = false;
+        game = rooms[room];
+        if(players[0] ==  game.p1|| players[1] == game.p1){p1 = true}
+        if(players[0] ==  game.p2|| players[1] == game.p2){p2 = true}
+        if(!p1 && !p2){
+          rooms[room].p1 = players[0];
+          rooms[room].p2 = players[1];
+        }
+        else if (p1 && !p2){
+          if(players[0] == game.p1){
+            game.p2 = players[1]
+          }
+          else{
+            game.p2 = players[0];
+          }
+        }
+        else if (!p1 && p2){
+          if(players[0] == game.p2){
+            game.p1 = players[1]
+          }
+          else{
+            game.p1 = players[0];
+          }
+        }
+        var turn = rooms[room].turn;
+      
+        io.to(room).emit("tttUpdate", rooms[room]);
+        io.to(rooms[room][turn]).emit("tttTurn");
+    }
+    else if (count > 2){
+      io.to(room).emit("tttUpdate", rooms[room]);
+    }
+    else{
+      io.to(room).emit("tttUpdate", {status:"not ready"});
+    }
+  
+  }
 function createGrid(width, height){
     var arr = []
     for(var i = 0; i < width; i++)
@@ -110,136 +183,4 @@ function createGrid(width, height){
         }
     }
     return arr;
-}
-
-function TTT(room){
-  var players = Object.keys(io.sockets.adapter.rooms[room].sockets);  
-  var count = players.length;
-  if(count == 2 && rooms[room] == undefined){
-    console.log("creating game")
-
-    rooms[room] = {turn: "p1" , grid: createGrid(3,3), status: "ready", p1: players[0], p2: players[1]}
-    var turn = rooms[room].turn;
-    
-    io.to(room).emit("tttUpdate", rooms[room]);
-    io.to(rooms[room][turn]).emit("tttTurn");
-  } 
-  else if (count == 2){
-      var p1  = false;
-      var p2 = false;
-      game = rooms[room];
-      if(players[0] ==  game.p1|| players[1] == game.p1){p1 = true}
-      if(players[0] ==  game.p2|| players[1] == game.p2){p2 = true}
-      if(!p1 && !p2){
-        rooms[room].p1 = players[0];
-        rooms[room].p2 = players[1];
-      }
-      else if (p1 && !p2){
-        if(players[0] == game.p1){
-          game.p2 = players[1]
-        }
-        else{
-          game.p2 = players[0];
-        }
-      }
-      else if (!p1 && p2){
-        if(players[0] == game.p2){
-          game.p1 = players[1]
-        }
-        else{
-          game.p1 = players[0];
-        }
-      }
-      var turn = rooms[room].turn;
-    
-      io.to(room).emit("tttUpdate", rooms[room]);
-      io.to(rooms[room][turn]).emit("tttTurn");
-  }
-  else if (count > 2){
-    io.to(room).emit("tttUpdate", rooms[room]);
-  }
-  else{
-    io.to(room).emit("tttUpdate", {status:"not ready"});
-  }
-}
-function tttComplete(grid){
-
-  
-    if(CheckState(grid) != 0){return true;}
-    if(CheckState(grid) == 0 && getMoves(grid).length == 0){return true;}
-    return false; 
-
-}
-function CheckState(grid){
-    // check wins
-    for(var x = 0; x < grid.length; x++){
-        match = true;
-        for(y = 0; y < grid[0].length; y++){
-            if(grid[x][y] != "O"){ match = false;}
-        }
-        if(match == true){return 10}
-    }
-    for(var x = 0; x < grid.length; x++){
-        match = true;
-        for(y = 0; y < grid[0].length; y++){
-            if(grid[y][x] != "O"){ match = false;}
-        }
-        if(match == true){return 10}
-    }
-    
-    
-    match = true;
-    for(var x = 0; x < grid.length; x++){
-
-        if(grid[x][x] != "O"){ match = false;}
-    }
-    if(match == true){return 10}
-    
-    
-    match = true;
-    for(var x = 0; x < grid.length; x++){
-        if(grid[x][grid.length -1 - x] != "O"){ match = false;}
-    }
-    if(match == true){return 10}
-    
-    // check losses
-    for(var x = 0; x < grid.length; x++){
-        match = true;
-        for(y = 0; y < grid[0].length; y++){
-            if(grid[x][y] != "X"){ match = false;}
-        }
-        if(match == true){return -10}
-    }
-    for(var x = 0; x < grid.length; x++){
-        match = true;
-        for(y = 0; y < grid[0].length; y++){
-            if(grid[y][x] != "X"){ match = false;}
-        }
-        if(match == true){return -10}
-    }
-    
-    
-    match = true;
-    for(var x = 0; x < grid.length; x++){
-        if(grid[x][x] != "X"){ match = false;}
-    }
-    if(match == true){return -10}
-    
-    
-    match = true;
-    for(var x = 0; x < grid.length; x++){
-        if(grid[x][grid.length -1 - x] != "X"){ match = false;}
-    }
-    if(match == true){return -10}
-    
-    return 0;
-}   
-function getMoves(grid){
-    var moves = []
-    for(var x  = 0; x < grid.length; x++){
-        for(var y = 0; y < grid[0].length; y++){
-            if(grid[x][y] == "_"){ moves.push({x: x, y: y})}
-        }
-    }
-    return moves;
 }
