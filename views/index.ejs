@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+
+    <body>
+    <h3>Welcome to my game application</h3>
+
+    <a id = "new-drawing" href = "#" > Create new drawing</a>
+    </body>
+    <script>
+
+    $("#new-drawing").on("click", function(){
+        var room = getRoom(); 
+        location = /draw/ + room;
+    })
+
+    function getRoom(){
+        return Math.round(Math.random() * 1000000000);
+    }
+    </script>
+</html>
+
