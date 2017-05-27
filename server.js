@@ -124,7 +124,38 @@ function TTT(room){
     io.to(room).emit("tttUpdate", rooms[room]);
     io.to(rooms[room][turn]).emit("tttTurn");
   } 
-  else if (count >= 2){
+  else if (count == 2){
+      var p1  = false;
+      var p2 = false;
+      game = rooms[room];
+      if(players[0] ==  game.p1|| players[1] == game.p1){p1 = true}
+      if(players[0] ==  game.p2|| players[1] == game.p2){p2 = true}
+      if(!p1 && !p2){
+        rooms[room].p1 = players[0];
+        rooms[room].p2 = players[1];
+      }
+      else if (p1 && !p2){
+        if(players[0] == game.p1){
+          game.p2 = players[1]
+        }
+        else{
+          game.p2 = players[0];
+        }
+      }
+      else if (!p1 && p2){
+        if(players[0] == game.p2){
+          game.p1 = players[1]
+        }
+        else{
+          game.p1 = players[0];
+        }
+      }
+      var turn = rooms[room].turn;
+    
+      io.to(room).emit("tttUpdate", rooms[room]);
+      io.to(rooms[room][turn]).emit("tttTurn");
+  }
+  else if (count > 2){
     io.to(room).emit("tttUpdate", rooms[room]);
   }
   else{
