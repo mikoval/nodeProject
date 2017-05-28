@@ -168,6 +168,8 @@ function TTT(room) {
     }
     else if (count > 2){
       io.to(room).emit("tttUpdate", rooms[room]);
+      var turn = rooms[room].turn;
+      io.to(rooms[room][turn]).emit("tttTurn");
     }
     else{
       io.to(room).emit("tttUpdate", {status:"not ready"});
