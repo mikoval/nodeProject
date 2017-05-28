@@ -8,7 +8,8 @@
 
     <a id = "new-drawing" href = "#" > Create new drawing</a><br>
     <a id = "new-minesweeper" href = "#" > Play Minesweeper</a><br>
-    Tic-Tac-Toe: <a id = "new-tic-tac-toe" href = "#" >Online</a>  <a  style = "margin-left: 10px" id = "new-tic-tac-toe-ai" href = "#" >AI</a>
+    Tic-Tac-Toe: <a id = "new-tic-tac-toe" href = "#" >Online</a>  <a  style = "margin-left: 10px" id = "new-tic-tac-toe-ai" href = "#" >AI</a><br>
+    Connect4: <a id = "new-connect-4" href = "#" >Online</a>  <a  style = "margin-left: 10px" id = "new-connect-4-ai" href = "#" >AI</a>
     </body>
     <script>
 
@@ -24,10 +25,17 @@
         location = "/tic-tac-toe/" + room;
     })
     $("#new-tic-tac-toe-ai").on("click", function(){
-        var room = getRoom(); 
+     
         location = "/tic-tac-toe-ai/" 
     })
-
+    $("#new-connect-4").on("click", function(){
+        var room = getRoom(); 
+        location = "/connect-4/" + room;
+    })
+    $("#new-connect-4-ai").on("click", function(){
+        
+        location = "/connect-4-ai/" 
+    })
 
     function getRoom(){
         return Math.round(Math.random() * 1000000000);
