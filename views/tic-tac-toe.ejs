@@ -1,6 +1,8 @@
 <html>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script src="/chat.js"></script>
+<link rel="stylesheet" href="/utility.css">
 <style>
 body{
     margin:20px;
@@ -35,36 +37,46 @@ body{
     text-align:center;
     z-index:30;
 }
-#tools-container{
-        padding:10px; 
-        top:0px; 
-        left: 700px;
-        display:inline; 
-        position:absolute;
-    }
+
 </style>
 <body>
+
+
 <div id = "grey-cover" class = "menu-item"></div>
  <div id = "select-menu" class = "menu-item">
     <h3 style = "margin-bottom:0px">Waiting for an opponent to join. Share a link to this page to invite.</h3>
     <img src = "https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" style = "width:100px; height:100px" > 
 </div>
 
-<canvas id="Canvas" width= "600px" height = "600px">
+<div  style = "display:inline-block; position:relative"><canvas id="Canvas" width= "600px" height = "600px">
 Your browser does not support the canvas element.
 </canvas>
-<br>
-<div id = "tools-container">
-    <h3 id = "turn" style = "display: none">Your turn</h3>
-    <h3 id = "status" style = "display: none"></h3><br>
-    <button id = "restart" style = "display:none">Play Again</button>
+</div>
+
+
+ <div id = "tools-container">
+    <h3 style = "margin: 5px" id = "turn" style = "visibility: hidden">Your turn</h3>
+    <h3 style = "margin: 5px" id = "status" style = "visibility: hidden"></h3>
+    <button id = "restart" style = "visibility: hidden; margin-bottom: 10px">Play Again</button>
+
+
+
+    <div class = "chat-box">
+        <div class = "chat-head">Chatbox</div>
+        <div class = "chat-body">
+            <textarea id = "chat-body" readonly></textarea>
+        </div>
+        <div class = "chat-input">
+            <div id = "name-input-container"> <p style = "display:inline"> Name: </p> <input type="text" id = "name-input" style = "display:inline; width:50%" class = "input-box" placeholder = "Enter name in order to chat"> </div>
+            <input type="text" id = "chat-input" style = "display: none; "  class = "input-box"  placeholder = "Type a message"> 
+        </div>
+    </div>
 </div>
 
 
 
-
 </div>
-<img border="0" id = "bombimg" alt="bomb" src="https://lh3.ggpht.com/YdRAkpeukPMqgxWjvYFoq3xftAP6ztWlNWBsci-S-XTM-0NFuqUpPZRafLM0oCbu63U=w300" style = " display:none">
+
 
 </body>
 
@@ -84,22 +96,25 @@ socket = io()
 socket.on('tttUpdate', setGrid);
 socket.on('tttTurn', setTurn);
 socket.on('tttComplete', complete);
+socket.on('text', newText);
 function complete(data){
-    $("#turn").hide();
+    $("#turn").css("visibility", "hidden");
     $("#status").text(data.status)
-    $("#status").show();
-    $("#restart").show();
+    $("#status").css("visibility", "visible");
+    $("#restart").css("visibility", "visible");
 }
 function setTurn(){
-    $("#turn").show();
+    $("#turn").css("visibility", "visible");
+    console.log("set visible")
     turn = true;
 }
 function setGrid(data){
     if(data.status != "ready"){$(".menu-item").show();}
     else{
-        $("#status").hide();
-        $("#restart").hide();
-        $("#turn").hide();
+        console.log("set hidden")
+        $("#status").css("visibility", "hidden");
+        $("#restart").css("visibility", "hidden");
+        $("#turn").css("visibility", "hidden");
         $(".menu-item").hide()
         grid = data.grid;
         display(grid);
@@ -160,6 +175,6 @@ function getMousePos(canvas, evt) {
     };
 }
 
-    
+
 </script>
 </html>

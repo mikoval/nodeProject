@@ -7,7 +7,7 @@ function setup() {
   background(51);
   socket = io()
   socket.on('drawMouse', newDrawing);
-  socket.on('drawText', newText);
+  socket.on('text', newText);
 }
 
 

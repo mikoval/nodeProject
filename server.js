@@ -44,7 +44,7 @@ function newConnection(socket){
     socket.join(room)
     //console.log(io.sockets.adapter.rooms[room].sockets.length); 
     socket.on('drawMouse', drawMouseMsg);
-    socket.on('drawText', drawTextMsg);
+    socket.on('text', textMsg);
     socket.on("tttMove", tttMove)
     socket.on("tttRestart", tttRestart)
     //socket.on('tttMove', tttMove);
@@ -56,9 +56,9 @@ function newConnection(socket){
     function drawMouseMsg(data){
         socket.broadcast.to(room).emit('drawMouse', data);
     }
-    function drawTextMsg(data){
+    function textMsg(data){
         console.log("got message")
-        socket.broadcast.to(room).emit('drawText', data);
+        socket.broadcast.to(room).emit('text', data);
     }
     // drawing complete
     // ttt handlers

@@ -5,13 +5,9 @@
     <script src="/sketch.js"></script>
     <script src="/jscolor.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+     <link rel="stylesheet" href="/utility.css">
     <style>
-    #tools-container{
-        padding:10px; 
-        top:0px; 
-        display:inline; 
-        position:absolute;
-    }
+    
     #stroke-picker{
         
         border:solid; 
@@ -21,100 +17,7 @@
         display:inline-block;
         
     }
-    #link-share{
-        background-color:lightgray;
-    }
-    .chat-box{
-        width:300px;
-        border:solid; 
-        border-width:1px; 
-        padding: 5px; 
-        border-radius:5px; 
-        height:300px;
-    }
-    .chat-head{
-        background-color:lightgray;
-    }
-    .chat-body{
-
-        position:absolute;
-        bottom:60px;
-        height:240px;
-        width:300px;
-
-    }
-    .chat-input{
-        height:20px;
-        width:300px;
-        position:absolute;
-        border-top:solid; 
-        border-width:1px; 
-      
-        bottom:30px;
-    }
-    .input-box{
-        border:0;
-        width:100%;
-        height:25px;
-    }
-    #chat-body{
-        width:100%;
-        height:100%;
-        border:0;
-        resize:none;
-    }
-    #grey-cover
-    {
-        background-color: gray;
-        filter:alpha(opacity=50); /* IE */
-        opacity: 0.5; /* Safari, Opera */
-        -moz-opacity:0.50; /* FireFox */
-        z-index: 20;
-        height: 100%;
-        width: 100%;
-        background-repeat:no-repeat;
-        background-position:center;
-        position:absolute;
-        top: 0px;
-        left: 0px;
-    }
-    #select-menu{
-        width:400px; 
-        height:200px;
-        background-color:white; 
-        position:absolute; 
-        top:40%;
-        left:50%;
-        margin-left:-200px;
-        margin-top:-100px;
-        border-radius:10px; 
-        display:block; 
-        opacity:1.0; 
-        text-align:center;
-        z-index:30;
-    }
-    .name-box{
-        float:left;
-        margin:5%;
-        width:90%;
-        height:50px;
-        text-align:left;
-        font-size:25;
-    }
-    .submit{
-        background:    #6aa84f;
-        background:    -webkit-linear-gradient(#6aa84f, #274e13);
-        background:    linear-gradient(#6aa84f, #274e13);
-        border-radius: 20px;
-        width:         150px;
-        height:        50px;
-        color:         #ffffff;
-        display:       inline-block;
-        font:          normal 700 27px/1 "Calibri", sans-serif;
-        text-align:    center;
-        text-shadow:   1px 1px #000000;
-        margin-top:-10px;
-    }
+ 
     </style>
   </head>
   <body>
@@ -162,7 +65,7 @@
             console.log($("#chat-body").val().length)
             if($("#chat-body").val().length >0)
                 text = "&#13;&#10;" + text
-            socket.emit('drawText', text);
+            socket.emit('text', text);
             $("#chat-body").html($("#chat-body").html() +  text );
 
 
