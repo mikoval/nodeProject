@@ -35,6 +35,9 @@ app.get('/connect-4-ai', function (req, res) {
 app.get('/connect-4/:room', function (req, res) {
   res.render('connect-4.ejs')
 })
+app.get('/fluid', function (req, res) {
+  res.render('fluid.ejs')
+})
 var socket = require('socket.io');
 
 var io = socket(server);
